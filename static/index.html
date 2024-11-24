@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -88,6 +88,169 @@
 
                 reader.readAsDataURL(file);
             });
+        });
+    </script>
+</body>
+</html> -->
+<!-- ============================================================================================================ -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trends in Interactive Technologies</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: small;
+            margin: 0;
+            padding: 0;
+            background-image: url('PRADUMN_BG_IXD.jpg');
+            background-size: cover;
+            background-position: center;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            color: #fff;
+        }
+
+        #tv-screen {
+            position: fixed;
+            top: 2%;
+            left: 30%;
+            width: 25%;
+            height: 25%;
+            border: 2px solid #ccc;
+            background-color: rgba(0, 0, 0, 0.221);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+            font-size: 1.2rem;
+            color: white;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        #dog-area {
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0);
+            display: flex;
+            top: 57%;
+            left: 82%;
+            bottom: 20%;
+            right: 5%;
+            width: 11%;
+            height: 15%;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="tv-screen">Click or Drag and Drop an image here</div>
+    <div id="dog-area"></div>
+    <audio id="hover-sound" src="basanti.wav"></audio>
+
+    <input type="file" id="file-input" accept="image/*" style="display: none;" />
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const tvScreen = document.getElementById('tv-screen');
+            const dogArea = document.getElementById('dog-area');
+            const hoverSound = document.getElementById('hover-sound');
+            const fileInput = document.getElementById('file-input');
+
+         
+            const handleImageUpload = (file) => {
+                if (!file || !file.type.startsWith('image/')) {
+                    alert('Please upload a valid image file.');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = () => {
+                    
+                    const img = document.createElement('img');
+                    img.src = reader.result;
+                    img.style.maxWidth = '100%';
+                    img.style.maxHeight = '100%';
+                    tvScreen.innerHTML = ''; 
+                    tvScreen.appendChild(img);
+
+                
+                    sendImageForAnalysis(reader.result.split(',')[1]);
+                };
+                reader.readAsDataURL(file);
+            };
+
+          
+            tvScreen.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                tvScreen.style.borderColor = 'yellow';
+            });
+
+            tvScreen.addEventListener('dragleave', () => {
+                tvScreen.style.borderColor = '#ccc';
+            });
+
+            tvScreen.addEventListener('drop', (e) => {
+                e.preventDefault();
+                tvScreen.style.borderColor = '#ccc';
+
+                const file = e.dataTransfer.files[0];
+                handleImageUpload(file);
+            });
+
+           
+            tvScreen.addEventListener('click', () => {
+                fileInput.click();
+            });
+
+            fileInput.addEventListener('change', () => {
+                const file = fileInput.files[0];
+                handleImageUpload(file);
+            });
+
+           // BASANTI 
+            dogArea.addEventListener('mouseenter', () => {
+                hoverSound.play();
+            });
+
+            // SEND IMAGE FOR ANALYSIS AND SERVER
+            async function sendImageForAnalysis(imageBase64) {
+                try {
+                    const response = await fetch('https://ai-web-2p7u.onrender.com/analyze', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ image: imageBase64 })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Server error: ${response.statusText}`);
+                    }
+
+                    const data = await response.json();
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+
+                    // IXD DISPLAY RESULT
+                    tvScreen.style.backgroundColor = 'transparent'; // freeze ixd screeen background momentarily
+                    tvScreen.innerHTML = <div style="color: black;">${data.result}</div>;
+
+                    // Restore the tv wth some delay
+                    setTimeout(() => {
+                        tvScreen.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                    }, 5000);
+                } catch (error) {
+                    tvScreen.innerHTML = <div style="color: red;">Error: ${error.message}</div>;
+                }
+            }
         });
     </script>
 </body>
