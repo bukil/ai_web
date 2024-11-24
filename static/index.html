@@ -1,99 +1,3 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IxD trends</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            max-width: 600px;
-        }
-        h1 {
-            text-align: center;
-        }
-        #output {
-            margin-top: 20px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            background-color: #f9f9f9;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-    </style>
-</head>
-<body>
-    <h1>TRends Test</h1>
-    <form id="image-form">
-        <label for="image-input">Upload an image:</label>
-        <input type="file" id="image-input" accept="image/*" required />
-        <button type="submit">Analyze</button>
-    </form>
-    <div id="output"></div>
-
-    <script>
-        // Wait for the DOM to be fully loaded
-        document.addEventListener("DOMContentLoaded", () => {
-            const form = document.getElementById('image-form');
-            const fileInput = document.getElementById('image-input');
-            const output = document.getElementById('output');
-
-            form.addEventListener('submit', async (event) => {
-                event.preventDefault(); // Prevent form from submitting
-
-                if (!fileInput.files.length) {
-                    alert('Please upload an image.');
-                    return;
-                }
-
-                const file = fileInput.files[0];
-                const reader = new FileReader();
-
-                reader.onload = async () => {
-                    try {
-                        const imageBase64 = reader.result.split(',')[1];
-
-                        // Send the image to the backend for processing
-                        const response = await fetch('https://ai-web-2p7u.onrender.com/analyze', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ image: imageBase64 })
-                        });
-
-                        if (!response.ok) {
-                            throw new Error(`Server error: ${response.statusText}`);
-                        }
-
-                        const data = await response.json();
-                        if (data.error) {
-                            throw new Error(data.error);
-                        }
-
-                        output.textContent = `Result: ${JSON.stringify(data.result)}`;
-                    } catch (error) {
-                        output.textContent = `Error: ${error.message}`;
-                    }
-                };
-
-                reader.readAsDataURL(file);
-            });
-        });
-    </script>
-</body>
-</html> -->
-<!-- ============================================================================================================ -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -222,7 +126,7 @@
             // SEND IMAGE FOR ANALYSIS AND SERVER
             async function sendImageForAnalysis(imageBase64) {
                 try {
-                    const response = await fetch('https://ai-web-2p7u.onrender.com/analyze', {
+                    const response = await fetch('http://127.0.0.1:5000/analyze', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -241,14 +145,14 @@
 
                     // IXD DISPLAY RESULT
                     tvScreen.style.backgroundColor = 'transparent'; // freeze ixd screeen background momentarily
-                    tvScreen.innerHTML = <div style="color: black;">${data.result}</div>;
+                    tvScreen.innerHTML = `<div style="color: black;">${data.result}</div>`;
 
                     // Restore the tv wth some delay
                     setTimeout(() => {
                         tvScreen.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
                     }, 5000);
                 } catch (error) {
-                    tvScreen.innerHTML = <div style="color: red;">Error: ${error.message}</div>;
+                    tvScreen.innerHTML = `<div style="color: red;">Error: ${error.message}</div>`;
                 }
             }
         });
