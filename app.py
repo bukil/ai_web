@@ -63,7 +63,7 @@ from flask_cors import CORS
 import requests
 import base64
 
-app = Flask(_name_)
+app = Flask(__name__)
 CORS(app)
 
 INVOKE_URL = "https://ai.api.nvidia.com/v1/vlm/nvidia/neva-22b"
@@ -122,5 +122,5 @@ def analyze_image():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-if _name_ == '_main_':
+if __name__ == '__main__':
     app.run(debug=True)
